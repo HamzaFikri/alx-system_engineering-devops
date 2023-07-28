@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Daemon process
-while true; do
-	echo I am alive! >> /tmp/my_process
-	sleep 2
+# Script that store I am allive! indefinitely in /tmp/my_process.
+while true
+do
+  sudo bash -c 'echo "I am alive!" >> /tmp/my_process'
+  sleep 2
 done
