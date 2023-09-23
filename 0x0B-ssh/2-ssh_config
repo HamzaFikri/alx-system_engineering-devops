@@ -1,0 +1,4 @@
+#  connect to a server without typing a password
+ Host 34.224.5.168
+	IdentityFile ~/.ssh/school 
+	PasswordAuthentication no
