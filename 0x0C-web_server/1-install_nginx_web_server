@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 # installs nginx
 
-apt-get -y update
-apt-get -y install nginx
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
-service nginx start
+sudo apt-get update
+sudo apt-get install -y nginx
+
+if ! pgrep -x "nginx" >/dev/null; then
+    sudo service nginx start
+fi
+
+echo "<html><body>Hello World!</body></html>" | sudo tee /var/www/html/index.html > /dev/null
+
+if ! sudo netstat -tuln | grep -q ":80 "; then
+    sudo sed -i 's/\(listen\s\+\)80/\180/' /etc/nginx/sites-available/default
+fi
+
+sudo service nginx reload
+sudo systemctl enable nginx
+echo "Nginx has been installed and configured. You can access it by visiting http://your_server_ip/"
