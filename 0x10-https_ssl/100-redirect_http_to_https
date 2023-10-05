@@ -37,10 +37,14 @@ frontend Randommall.tech
     bind 0:80
     default_backend mhfsoft.tech_backend
 
-frontend www-https
-    bind *:443 ssl crt etc/letsencrypt/live/www.mhfsoft.tech/fullchain.pem
-    reqadd X-Forwarded-Proto:\ https
-    default_backend www-backend
+bind *:443 ssl crt /etc/haproxy/certs/www.mhsoft.tech.pem
+redirect scheme https if !{ ssl_fc }
+frontend http_front
+        bind *:80
+        bind *:443 ssl crt /etc/haproxy/certs/www.mhfsoft.tech.pem
+        redirect scheme https code 301 if !{ ssl_fc }
+        default_backend http_back
+
 
 backend mhfsoft.tech_backend
     timeout connect  3000
