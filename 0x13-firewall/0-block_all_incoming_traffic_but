@@ -1,0 +1,15 @@
+sudo apt -y update
+# Check the status of ufw to make sure it is active by running:
+sudo apt install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Allow incoming traffic on TCP
+sudo ufw allow 22/tcp
+sudo ufw allow 433/tcp
+sudo ufw allow 80/tcp
+
+# check status 
+sudo ufw status verbose
+sudo ufw enable 
+sudo ufw status verbose
