@@ -11,5 +11,4 @@ sudo ufw allow 80/tcp
 
 # check status 
 sudo ufw status verbose
-sudo ufw enable 
-sudo ufw status verbose
+sudo ufw enable
