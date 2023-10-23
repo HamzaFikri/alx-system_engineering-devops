@@ -1,42 +1,34 @@
 #!/usr/bin/python3
-"""
-Python script that, using REST API (https://jsonplaceholder.typicode.com/)
-"""
+"""Script that given employee ID, return information about his list progress"""
 import requests
-import sys
-
-base_url = 'https://jsonplaceholder.typicode.com/'
-
-
-def do_request():
-    '''Performs request'''
-    if len(sys.argv) < 2:
-        return print('USAGE:', __file__, '<employee id>')
-    eid = sys.argv[1]
-    try:
-        _eid = int(sys.argv[1])
-    except ValueError:
-        return print('Employee id must be an integer')
-
-    response = requests.get(base_url + 'users/' + eid)
-    if response.status_code == 404:
-        return print('User id not found')
-    elif response.status_code != 200:
-        return print('Error: status_code:', response.status_code)
-    user = response.json()
-
-    response = requests.get(base_url + 'todos/')
-    if response.status_code != 200:
-        return print('Error: status_code:', response.status_code)
-    todos = response.json()
-
-    user_todos = [todo for todo in todos
-                  if todo.get('userId') == user.get('id')]
-    completed = [todo for todo in user_todos if todo.get('completed')]
-    print('Employee', user.get('name'),
-          'is done with tasks({}/{}):'.
-          format(len(completed), len(user_todos)))
-    [print('\t', todo.get('title')) for todo in completed]
+from sys import argv
 
 if __name__ == '__main__':
-    do_request()
+    url_todo = 'https://jsonplaceholder.typicode.com/todos'
+    url_user = 'https://jsonplaceholder.typicode.com/users'
+
+    response = requests.get(url_todo)
+    values = response.json()
+
+    name_get = requests.get(url_user)
+    user_name = name_get.json()
+    real_name = ""
+    for each_element in user_name:
+        if each_element.get('id') == int(argv[1]):
+            real_name = each_element.get('name')
+            break
+
+    full_list = []
+    for dict in values:
+        if dict.get('userId') == int(argv[1]):
+            full_list.append(dict)
+
+    true_elements = []
+    for completed in full_list:
+        if completed.get('completed'):
+            true_elements.append(completed)
+
+    print('Employee {} is done with tasks({}/{}):'.
+          format(real_name, len(true_elements), len(full_list)))
+    for task in true_elements:
+        print('\t {}'.format(task.get('title')))
