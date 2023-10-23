@@ -5,24 +5,38 @@ Python script that, using REST API (https://jsonplaceholder.typicode.com/)
 import requests
 import sys
 
+base_url = 'https://jsonplaceholder.typicode.com/'
 
-if __name__ == "__main__":
-    if len(sys.argv) >= 2 and sys.argv[1].isdigit():
-        user = sys.argv[1]
-        url = "https://jsonplaceholder.typicode.com/users/" + user
-        repos = requests.get(url)
-        name = repos.json().get("name")
 
-        url = "https://jsonplaceholder.typicode.com/users/" + user + "/todos"
-        repos = requests.get(url)
-        done = len([todo for todo in repos.json() if todo.get("completed")])
-        total = len(repos.json())
+def do_request():
+    '''Performs request'''
+    if len(sys.argv) < 2:
+        return print('USAGE:', __file__, '<employee id>')
+    eid = sys.argv[1]
+    try:
+        _eid = int(sys.argv[1])
+    except ValueError:
+        return print('Employee id must be an integer')
 
-        first = True
-        for element in repos.json():
-            if first:
-                print("Employee {} is done with tasks({}/{}):".
-                      format(name, done, total))
-                first = False
-            if element.get("completed"):
-                print("\t {}".format(element.get("title")))
+    response = requests.get(base_url + 'users/' + eid)
+    if response.status_code == 404:
+        return print('User id not found')
+    elif response.status_code != 200:
+        return print('Error: status_code:', response.status_code)
+    user = response.json()
+
+    response = requests.get(base_url + 'todos/')
+    if response.status_code != 200:
+        return print('Error: status_code:', response.status_code)
+    todos = response.json()
+
+    user_todos = [todo for todo in todos
+                  if todo.get('userId') == user.get('id')]
+    completed = [todo for todo in user_todos if todo.get('completed')]
+    print('Employee', user.get('name'),
+          'is done with tasks({}/{}):'.
+          format(len(completed), len(user_todos)))
+    [print('\t', todo.get('title')) for todo in completed]
+
+if __name__ == '__main__':
+    do_request()
