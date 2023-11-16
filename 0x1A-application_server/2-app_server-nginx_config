@@ -25,22 +25,25 @@ server {
         index index.html index.htm index.nginx-debian.html;
 
         server_name _;
-        rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
-        error_page 404 /custom_404.html;
-        index index.html index.htm;
-        error_page 404 /404.html;
-        add_header X-Served-By $hostname;
+
+        add_header X-Served-By "378858-web-01";
 
 
     location /hbnb_static/ {
         alias /data/web_static/current/;
     }
 
-        location /airbnb-onepage/ {
-                proxy_pass http://localhost:5000;
+        location /redirect_me {
+                return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
         }
 
-        location = /404.html {
-                root /var/www/error/;
-                internal;
+        location /airbnb-onepage/ {
+                proxy_pass http://127.0.0.1:5000/airbnb-onepage/;
+        }
+
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
         }
